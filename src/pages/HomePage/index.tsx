@@ -1,48 +1,87 @@
-import { useEffect, useState } from "react";
-import { Grid, Stack } from "@mui/material";
-import {
-  DragDropContext,
-  DropResult,
-  ResponderProvided,
-} from "@hello-pangea/dnd";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Grid } from "@mui/material";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import DishPollList from "./DishPollList";
 import DishPollAction from "./DishPollAction";
-import { DishData } from "../../data";
+import { DishDataType, DishType } from "../../data";
 
 const HomePage = () => {
-  const [dishData, setDishData] = useState<typeof DishData>([]);
+  const [dishData, setDishData] = useState<DishDataType>([]);
+  const [voteData, setVoteData] = useState<DishDataType>(Array(3).fill({}));
+  const [selectedDish, setSelectedDish] = useState<DishType>({
+    description: "",
+    dishName: "",
+    id: -1,
+    image: "",
+  });
 
-  const handleDragEnd = (
-    { destination, source, draggableId }: DropResult,
-    provided: ResponderProvided
-  ) => {
+  const { isLoading } = useQuery({
+    queryKey: ["dish-data"],
+    queryFn: () =>
+      fetch(
+        "https://raw.githubusercontent.com/syook/react-dishpoll/main/db.json"
+      ).then((res) => res.json() as Promise<DishDataType>),
+    onSuccess: (data) => {
+      setDishData(data);
+    },
+  });
+
+  const handleDragEnd = ({ destination, source }: DropResult) => {
     if (!destination) return;
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     )
       return;
-    // dish , vote-action
 
     const newDishData = Array.from(dishData);
-    newDishData.splice(source.index, 1);
-    newDishData.splice(destination.index, 0, dishData[source.index]);
-    setDishData(newDishData);
+    if (destination.droppableId === "dish") {
+      newDishData.splice(source.index, 1);
+      newDishData.splice(destination.index, 0, dishData[source.index]);
+      setDishData(newDishData);
+    }
+
+    if (destination.droppableId === "vote-action") {
+      const voteDataArray = Array.from(voteData);
+      const currentIndexData = voteDataArray[destination.index];
+
+      voteDataArray.splice(destination.index, 1);
+      voteDataArray.splice(destination.index, 0, dishData[source.index]);
+
+      if (voteDataArray.length > 3) {
+        voteDataArray.pop();
+        return;
+      }
+
+      if (Object.keys(currentIndexData).length > 0) {
+        newDishData.splice(source.index, 1, currentIndexData);
+      } else {
+        newDishData.splice(source.index, 1);
+      }
+
+      setDishData(newDishData);
+      setVoteData(voteDataArray);
+    }
   };
 
-  useEffect(() => {
-    setDishData(DishData);
-  }, []);
-
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={4}>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Grid item xs={6}>
-          <DishPollList id={"dish"} dishListData={dishData} />
+          <DishPollList
+            dishListData={dishData}
+            setSelectedDish={setSelectedDish}
+            isLoading={isLoading}
+          />
         </Grid>
 
         <Grid item xs={6}>
-          <DishPollAction />
+          <DishPollAction
+            voteData={voteData}
+            selectedDish={selectedDish}
+            setSelectedDish={setSelectedDish}
+          />
         </Grid>
       </DragDropContext>
     </Grid>

@@ -8,9 +8,3 @@ export const Container = styled('div')({
     height: `calc(100vh - ${APP_BAR_HEIGHT + 12}px)`,
     padding: 14
 })
-
-export const AutocompleteContainer = styled('div')({
-    display: 'flex',
-    justifyContent: 'flex-end',
-    width: '100%'
-})

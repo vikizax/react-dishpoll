@@ -1,98 +1,92 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import {
   Typography,
-  TextField,
-  Autocomplete,
   List,
+  ListItemButton,
   ListItem,
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Stack,
+  LinearProgress,
 } from "@mui/material";
 import SimpleBar from "simplebar-react";
-import { Search as SearchIcon } from "@mui/icons-material";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-import { Container, AutocompleteContainer } from "./styles";
+import { Container } from "./styles";
 import { IDishPollListProps } from "./interface";
 
-const DishPollList = ({ id, dishListData }: IDishPollListProps) => {
+const DishPollList = ({
+  dishListData,
+  setSelectedDish,
+  isLoading,
+}: IDishPollListProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
-  console.log({ dishListData });
+
   return (
     <Container>
-      <Stack gap={1} ref={headerRef}>
-        <Typography variant="h5">Dish Poll</Typography>
-        <AutocompleteContainer>
-          <Autocomplete
-            disablePortal
-            options={[]}
-            sx={{
-              width: "60%",
-              "& .MuiAutocomplete-popupIndicator": {
-                transform: "rotate(0)",
-              },
-              mb: 1,
-            }}
-            renderInput={(params) => (
-              <TextField {...params} placeholder="Dish" />
-            )}
-            fullWidth={false}
-            popupIcon={<SearchIcon />}
-          />
-        </AutocompleteContainer>
-      </Stack>
+      <Typography variant="h5" ref={headerRef} mb={4}>
+        Dish Poll
+      </Typography>
 
-      <Droppable droppableId={id}>
-        {({ droppableProps, innerRef, placeholder }) => (
-          <SimpleBar
-            style={{
-              maxHeight: headerRef.current
-                ? `calc(100% - ${headerRef.current.clientHeight}px)`
-                : "90%",
-              flex: 1,
-            }}
-          >
-            <List
-              sx={{
-                width: "100%",
-                bgcolor: "background.paper",
+      {isLoading ? (
+        <LinearProgress />
+      ) : (
+        <Droppable droppableId={"dish"}>
+          {({ droppableProps, innerRef, placeholder }) => (
+            <SimpleBar
+              style={{
+                maxHeight: headerRef.current
+                  ? `calc(100% - ${headerRef.current.clientHeight + 40}px)`
+                  : "90%",
+                flex: 1,
               }}
-              ref={innerRef}
-              {...droppableProps}
             >
-              {dishListData.map(({ dishName, id, image }, idx) => (
-                <Draggable draggableId={idx + ""} index={idx} key={"drag" + idx}>
-                  {({ draggableProps, innerRef, dragHandleProps }) => (
-                    <ListItem
-                      sx={{
-                        border: "1px solid rgba(0,0,0,0.1)",
-                        mb: 1,
-                        bgcolor: "background.paper",
-                      }}
-                      {...draggableProps}
-                      {...dragHandleProps}
-                      ref={innerRef}
-                      key={"test=" + idx}
-                    >
-                      <ListItemAvatar>
-                        <Avatar
-                          alt={dishName.toLowerCase()}
-                          src={`${image}?${id}`}
-                        />
-                      </ListItemAvatar>
-                      <ListItemText primary={dishName} />
-                    </ListItem>
-                  )}
-                </Draggable>
-              ))}
-              {placeholder}
-            </List>
-          </SimpleBar>
-        )}
-      </Droppable>
+              <List
+                sx={{
+                  width: "100%",
+                  cursor: "grab",
+                }}
+                ref={innerRef}
+                {...droppableProps}
+              >
+                {dishListData.map(({ dishName, id, image }, idx) => (
+                  <Draggable
+                    draggableId={idx + ""}
+                    index={idx}
+                    key={"drag" + idx}
+                  >
+                    {({ draggableProps, innerRef, dragHandleProps }) => (
+                      <ListItemButton
+                        sx={{
+                          border: "1px solid rgba(0,0,0,0.1)",
+                          mb: 1,
+                          bgcolor: "background.paper",
+                          zIndex: 1,
+                        }}
+                        {...draggableProps}
+                        {...dragHandleProps}
+                        ref={innerRef}
+                        key={"item-" + idx}
+                        onMouseDown={() => setSelectedDish(dishListData[idx])}
+                      >
+                        <ListItemAvatar>
+                          <Avatar
+                            alt={dishName.toLowerCase()}
+                            src={`${image}?${id}`}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText primary={dishName} />
+                      </ListItemButton>
+                    )}
+                  </Draggable>
+                ))}
+                {placeholder}
+              </List>
+            </SimpleBar>
+          )}
+        </Droppable>
+      )}
     </Container>
   );
 };
 
-export default DishPollList;
+export default memo(DishPollList);
