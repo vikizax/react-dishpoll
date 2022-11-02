@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar, Menu, MenuItem } from "@mui/material";
+import { Avatar, Menu, MenuItem, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { APP_BAR_HEIGHT } from "../../style-constants";
 
@@ -12,7 +12,7 @@ const Container = styled("div")({
 });
 
 const NameContainer = styled("div")({
-  padding: 10,
+  padding: "10px 18px",
 });
 
 const AppBar = () => {
@@ -41,7 +41,11 @@ const AppBar = () => {
           "aria-labelledby": "profile-menu",
         }}
       >
-        <NameContainer>John Smith</NameContainer>
+        <NameContainer>
+          <Typography variant="body1" fontWeight={"bold"}>
+            John Smith
+          </Typography>
+        </NameContainer>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
     </Container>
