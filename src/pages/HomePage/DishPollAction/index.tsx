@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import DishDescription from "./DishDescription";
+import DishDescription from "../../../components/DishDescription";
 import PollVote from "./PollVote";
 import { DishDataType, DishType } from "../../../data";
 import { IDishPollActionProps } from "./interface";

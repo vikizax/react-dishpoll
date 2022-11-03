@@ -1,8 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
-import { DishDataType, DishType } from "../../../../data";
 import { AlertColor } from "@mui/material";
-export interface IPollVoteProps {
-    voteData: DishDataType;
+import {  DishType } from "../../../data";
+import { DishRankType } from "../LeaderboardList/interface";
+
+export interface IUserSubmissionRankProps {
+    voteData: DishRankType[];
     setSelectedDish: Dispatch<SetStateAction<DishType>>;
 }
 

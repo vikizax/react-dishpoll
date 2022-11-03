@@ -7,18 +7,72 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Stars } from "@mui/icons-material";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-import { IPollVoteProps } from "./interface";
-import { memo } from "react";
-
-const BADGE_COLOR = ["#b68424", "#c3bdbd", "#81785f"];
+import { useNavigate } from "react-router-dom";
+import { IPollVoteProps, ISnackData } from "./interface";
+import { memo, useState } from "react";
+import { elipsify } from "../../../../utility/elipsify";
+import { addVoteHandler } from "../../../../db";
+import { BADGE_COLOR, RANK_POINT } from "../../../../constants";
 
 const PollVote = ({ voteData, setSelectedDish }: IPollVoteProps) => {
+  const navigate = useNavigate();
+
+  const [snackData, setSnackData] = useState<ISnackData>({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const handleVoteSubmit = () => {
+    let isValid = true;
+    voteData.forEach((vote) => {
+      if (Object.keys(vote).length <= 0) isValid = false;
+    });
+
+    if (!isValid) {
+      setSnackData({
+        open: true,
+        message: "Please vote for all three ranks!",
+        severity: "info",
+      });
+      return;
+    }
+
+    addVoteHandler({
+      email: "user1@mail.com",
+      voteData: voteData.map((vote, idx) => ({
+        dishId: vote.id,
+        point: RANK_POINT[idx],
+      })),
+    });
+
+    setSnackData({
+      open: true,
+      message: "Vote submitted!",
+      severity: "success",
+    });
+
+    setTimeout(() => {
+      navigate("/leaderboard");
+    }, 1000);
+  };
+
+  const handleSnackClose = () => {
+    setSnackData((prev) => ({ ...prev, open: false }));
+  };
+
   return (
     <Stack
-      sx={{ border: "1px solid rgba(0,0,0,0.1)", padding: 2, overflow: "auto" }}
+      sx={{
+        border: "1px solid rgba(0,0,0,0.1)",
+        padding: 2,
+        overflow: "hidden",
+      }}
     >
       <Stack
         flexDirection={"row"}
@@ -26,7 +80,12 @@ const PollVote = ({ voteData, setSelectedDish }: IPollVoteProps) => {
         width={"100%"}
       >
         <Typography variant="h5">Vote</Typography>
-        <Button variant="contained" disableElevation color="secondary">
+        <Button
+          variant="contained"
+          disableElevation
+          color="secondary"
+          onClick={handleVoteSubmit}
+        >
           Submit
         </Button>
       </Stack>
@@ -66,7 +125,11 @@ const PollVote = ({ voteData, setSelectedDish }: IPollVoteProps) => {
                       />
                     </ListItemAvatar>
                     <ListItemText
-                      primary={data?.dishName ?? `Rank ${idx + 1}`}
+                      primary={
+                        data?.dishName
+                          ? elipsify(data.dishName)
+                          : `Rank ${idx + 1}`
+                      }
                     />
                     {Object.keys(data).length > 0 && (
                       <Stack
@@ -91,6 +154,17 @@ const PollVote = ({ voteData, setSelectedDish }: IPollVoteProps) => {
           </List>
         )}
       </Droppable>
+
+      <Snackbar
+        open={snackData.open}
+        autoHideDuration={6000}
+        onClose={handleSnackClose}
+        anchorOrigin={{ horizontal: "right", vertical: "top" }}
+      >
+        <Alert onClose={handleSnackClose} severity={snackData.severity}>
+          {snackData.message}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };

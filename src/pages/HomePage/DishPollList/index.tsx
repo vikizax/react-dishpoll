@@ -3,7 +3,6 @@ import {
   Typography,
   List,
   ListItemButton,
-  ListItem,
   ListItemText,
   ListItemAvatar,
   Avatar,
@@ -13,6 +12,7 @@ import SimpleBar from "simplebar-react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { Container } from "./styles";
 import { IDishPollListProps } from "./interface";
+import { elipsify } from "../../../utility/elipsify";
 
 const DishPollList = ({
   dishListData,
@@ -43,7 +43,6 @@ const DishPollList = ({
               <List
                 sx={{
                   width: "100%",
-                  cursor: "grab",
                 }}
                 ref={innerRef}
                 {...droppableProps}
@@ -61,6 +60,7 @@ const DishPollList = ({
                           mb: 1,
                           bgcolor: "background.paper",
                           zIndex: 1,
+                          cursor: "grab",
                         }}
                         {...draggableProps}
                         {...dragHandleProps}
@@ -74,7 +74,7 @@ const DishPollList = ({
                             src={`${image}?${id}`}
                           />
                         </ListItemAvatar>
-                        <ListItemText primary={dishName} />
+                        <ListItemText primary={elipsify(dishName)} />
                       </ListItemButton>
                     )}
                   </Draggable>

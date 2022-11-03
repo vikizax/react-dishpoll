@@ -25,6 +25,7 @@ const HomePage = () => {
     onSuccess: (data) => {
       setDishData(data);
     },
+    refetchOnWindowFocus: false,
   });
 
   const handleDragEnd = ({ destination, source }: DropResult) => {
