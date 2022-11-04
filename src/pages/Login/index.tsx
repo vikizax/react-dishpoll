@@ -52,6 +52,7 @@ const LoginPage = () => {
         severity: "error",
       });
       setInvalid({ password: true, username: true });
+      return;
     }
     setAuth({ username: u_name, authenticated, authenticating: false });
     navigate("/");
