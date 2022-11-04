@@ -7,6 +7,8 @@ import App from "./App";
 import "./index.css";
 import "simplebar-react/dist/simplebar.min.css";
 import CssBaseline from "@mui/material/CssBaseline";
+import { HelmetProvider } from "react-helmet-async";
+
 
 const darkTheme = createTheme({
   palette: {
@@ -18,12 +20,14 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <Router>
           <App />
         </Router>
       </ThemeProvider>
+      </HelmetProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

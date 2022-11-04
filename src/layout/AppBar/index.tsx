@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Avatar, Menu, MenuItem, Typography, Stack, Link } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import { APP_BAR_HEIGHT } from "../../constants";
+import { AuthContext } from "../../context";
+import { logoutHandler } from "../../db";
 
 const Container = styled("div")({
   display: "flex",
@@ -17,6 +19,7 @@ const NameContainer = styled("div")({
 });
 
 const AppBar = () => {
+  const { setAuth, auth } = useContext(AuthContext);
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -25,6 +28,8 @@ const AppBar = () => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
+    logoutHandler();
+    setAuth({ authenticated: false, username: "", authenticating: false });
     setAnchorEl(null);
   };
 
@@ -71,7 +76,7 @@ const AppBar = () => {
       >
         <NameContainer>
           <Typography variant="body1" fontWeight={"bold"}>
-            John Smith
+            {auth.username}
           </Typography>
         </NameContainer>
         <MenuItem onClick={handleClose}>Logout</MenuItem>

@@ -1,11 +1,21 @@
 export type VoteData = {
-    dishId: number;
-    point: number;
-}
+  dishId: number;
+  point: number;
+};
 export interface IAddVoteProps {
-    email: string;
-    voteData: VoteData[]
+  username: string;
+  voteData: VoteData[];
 }
 export interface IGetUserVote {
-    email: string;
+  username: string;
+}
+
+export interface IUserLoginProps {
+  username: string;
+  password: string;
+}
+
+export interface IUserAuthResult {
+  username: string;
+  authenticated: boolean;
 }

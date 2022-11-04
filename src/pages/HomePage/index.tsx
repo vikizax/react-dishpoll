@@ -5,6 +5,7 @@ import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import DishPollList from "./DishPollList";
 import DishPollAction from "./DishPollAction";
 import { DishDataType, DishType } from "../../data";
+import Page from "../../components/Page";
 
 const HomePage = () => {
   const [dishData, setDishData] = useState<DishDataType>([]);
@@ -67,25 +68,27 @@ const HomePage = () => {
   };
 
   return (
-    <Grid container spacing={4}>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Grid item xs={6}>
-          <DishPollList
-            dishListData={dishData}
-            setSelectedDish={setSelectedDish}
-            isLoading={isLoading}
-          />
-        </Grid>
+    <Page title="React Dish Poll: Home">
+      <Grid container spacing={4}>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Grid item xs={6}>
+            <DishPollList
+              dishListData={dishData}
+              setSelectedDish={setSelectedDish}
+              isLoading={isLoading}
+            />
+          </Grid>
 
-        <Grid item xs={6}>
-          <DishPollAction
-            voteData={voteData}
-            selectedDish={selectedDish}
-            setSelectedDish={setSelectedDish}
-          />
-        </Grid>
-      </DragDropContext>
-    </Grid>
+          <Grid item xs={6}>
+            <DishPollAction
+              voteData={voteData}
+              selectedDish={selectedDish}
+              setSelectedDish={setSelectedDish}
+            />
+          </Grid>
+        </DragDropContext>
+      </Grid>
+    </Page>
   );
 };
 

@@ -1,6 +1,6 @@
 import { Grid, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DishDataType, DishType } from "../../data";
 import { IDishIdToDishType } from "./interface";
 import LeaderboardList from "./LeaderboardList";
@@ -8,8 +8,14 @@ import { getAllVoteDataHandler, getUserVoteHandler } from "../../db";
 import { DishRankType, IDishIdToRankType } from "./LeaderboardList/interface";
 import DishDescription from "../../components/DishDescription";
 import UserSubmissionRank from "./UserSubmissionRank";
+import Page from "../../components/Page";
+import { AuthContext } from "../../context";
 
 const Leaderboard = () => {
+  const {
+    auth: { username },
+  } = useContext(AuthContext);
+
   const [selectedDish, setSelectedDish] = useState<DishType>({
     description: "",
     dishName: "",
@@ -48,7 +54,7 @@ const Leaderboard = () => {
       sortedData.push({ ...dish, points: 0 });
     });
 
-    const userVoteData = getUserVoteHandler({ email: "user1@mail.com" });
+    const userVoteData = getUserVoteHandler({ username });
     const votedIds = userVoteData.map(({ dishId }) => dishId);
     const userDishRank: DishRankType[] = [];
 
@@ -59,7 +65,7 @@ const Leaderboard = () => {
     });
 
     setDishData(sortedData);
-    setUserDishRank(userDishRank)
+    setUserDishRank(userDishRank);
   };
 
   const { isLoading } = useQuery({
@@ -78,26 +84,28 @@ const Leaderboard = () => {
     refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {}, []);
-
-  console.log({ dishData });
   return (
-    <Grid container spacing={4}>
-      <Grid item xs={6}>
-        <LeaderboardList
-          dishRankList={dishData}
-          isLoading={isLoading}
-          setSelectedDish={setSelectedDish}
-        />
-      </Grid>
+    <Page title="React Dish Poll: Leaderboard">
+      <Grid container spacing={4}>
+        <Grid item xs={6}>
+          <LeaderboardList
+            dishRankList={dishData}
+            isLoading={isLoading}
+            setSelectedDish={setSelectedDish}
+          />
+        </Grid>
 
-      <Grid item xs={6}>
-        <Stack gap={2}>
-          <UserSubmissionRank setSelectedDish={setSelectedDish} voteData={userDishRank} />
-          <DishDescription dish={selectedDish} />
-        </Stack>
+        <Grid item xs={6}>
+          <Stack gap={2}>
+            <UserSubmissionRank
+              setSelectedDish={setSelectedDish}
+              voteData={userDishRank}
+            />
+            <DishDescription dish={selectedDish} />
+          </Stack>
+        </Grid>
       </Grid>
-    </Grid>
+    </Page>
   );
 };
 
