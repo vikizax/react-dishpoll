@@ -1,3 +1,6 @@
+## Live URL
+https://react-dishpoll-alpha.vercel.app/
+
 ## Setup Instruction
 
 - Install dependencies:
