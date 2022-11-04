@@ -10,7 +10,7 @@
 
 ## Login Instruction
 
-Use the following credentials to login:
+Use the following credentials `username` & `password` to login:
 
 ```json 
     [
