@@ -14,13 +14,17 @@ import { Stars } from "@mui/icons-material";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { useNavigate } from "react-router-dom";
 import { IPollVoteProps, ISnackData } from "./interface";
-import { memo, useState } from "react";
+import { memo, useContext, useState } from "react";
 import { elipsify } from "../../../../utility/elipsify";
 import { addVoteHandler } from "../../../../db";
 import { BADGE_COLOR, RANK_POINT } from "../../../../constants";
+import { AuthContext } from "../../../../context";
 
 const PollVote = ({ voteData, setSelectedDish }: IPollVoteProps) => {
   const navigate = useNavigate();
+  const {
+    auth: { username },
+  } = useContext(AuthContext);
 
   const [snackData, setSnackData] = useState<ISnackData>({
     open: false,
@@ -44,7 +48,7 @@ const PollVote = ({ voteData, setSelectedDish }: IPollVoteProps) => {
     }
 
     addVoteHandler({
-      email: "user1@mail.com",
+      username: username,
       voteData: voteData.map((vote, idx) => ({
         dishId: vote.id,
         point: RANK_POINT[idx],
